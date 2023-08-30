@@ -15,7 +15,7 @@ const taskSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    priority_level: {
+    priority: {
       type: String,
       required: true,
     },

@@ -6,9 +6,9 @@ const Task = require("../model/taskModel");
 // @access Private route
 const createTask = async (req, res) => {
   try {
-    const { userId, title, description, priority_level, date } = req.body;
+    const { userId, title, description, priority, date } = req.body;
 
-    if (!title || !description || !priority_level || !date) {
+    if (!title || !description || !priority || !date) {
       return res.status(404).json({ message: "All Fields Are Mandatory" });
     }
 
@@ -18,7 +18,7 @@ const createTask = async (req, res) => {
       userId,
       title,
       description,
-      priority_level,
+      priority,
       date: parsedDate,
     });
     if (task) {
@@ -34,8 +34,18 @@ const createTask = async (req, res) => {
 // @access Private route
 const getTasks = async (req, res) => {
   try {
-    const task = await Task.find();
-    res.status(200).json(task);
+    const { isCompleted, priority } = req.query;
+    let query = {};
+
+    if (isCompleted) {
+      query.isCompleted = isCompleted;
+    }
+    if (priority) {
+      query.priority = priority;
+    }
+    
+    const tasks = await Task.find(query);
+    res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ message: "Error Getting tasks." });
   }
@@ -47,7 +57,7 @@ const getTasks = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    // const { title, description, priority_level, isCompleted, date } = req.body;
+    // const { title, description, priority, isCompleted, date } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid Task Id" });
